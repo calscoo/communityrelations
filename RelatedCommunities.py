@@ -1,10 +1,5 @@
-import matplotlib.pyplot as plt
-import networkx as nx
-from matplotlib import pylab
-import numpy as np
-
 def set_node_community(G, communities):
-    '''Add community to node attributes'''
+    """Add community to node attributes"""
     for c, v_c in enumerate(communities):
         for v in v_c:
             # Add 1 to save 0 for external edges
@@ -12,7 +7,7 @@ def set_node_community(G, communities):
 
 
 def set_edge_community(G):
-    '''Find internal edges and add their community to their attributes'''
+    """Find internal edges and add their community to their attributes"""
     for v, w, in G.edges:
         if G.nodes[v]['community'] == G.nodes[w]['community']:
             # Internal edge, mark with community
@@ -23,14 +18,17 @@ def set_edge_community(G):
 
 
 def detect_related_communities(G, communities, relation_strength):
+    """Detect the surrounding related communities based on their relation strength"""
     set_node_community(G, communities)
     set_edge_community(G)
 
-    # Set community color for edges between members of the same community (internal) and intra-community edges (external_edges)
+    # external edges are edges that have no community
     external_edges = [(v, w) for v, w in G.edges if G.edges[v, w]['community'] == 0]
 
     related_community_edges = dict()
 
+    # add all external edges to dictionary, where the key is a formatted string "x_y",
+    # where x and y are the communities joined by the external edge
     for edge in external_edges:
         x = G.nodes[edge[0]]['community']
         y = G.nodes[edge[1]]['community']
@@ -44,6 +42,7 @@ def detect_related_communities(G, communities, relation_strength):
         related_community_edges[key] = edges
         del edges
 
+    # join keys "x_y" and "y_x" since they are the same relation
     dead_keys = set()
     for key in related_community_edges.keys():
         if key not in dead_keys:
@@ -60,6 +59,7 @@ def detect_related_communities(G, communities, relation_strength):
     for dead_key in dead_keys:
         del related_community_edges[dead_key]
 
+    # remove edges where either node appears more than once in list of relation edges between the two communities
     for rel in related_community_edges.values():
         used = set()
         dead_pairs = set()
@@ -73,6 +73,7 @@ def detect_related_communities(G, communities, relation_strength):
         for dead_pair in dead_pairs:
             rel.remove(dead_pair)
 
+    # enforce the relation_strength by removing relation edges that don't qualify
     dead_keys = set()
     for key in related_community_edges:
         split = key.split("_")

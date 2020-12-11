@@ -4,8 +4,7 @@ from matplotlib import pylab
 
 
 def get_color(i, r_off=1, g_off=1, b_off=1):
-    '''Assign a color to a vertex.'''
-    r0, g0, b0 = 0, 0, 0
+    """Assign a color to a vertex."""
     n = 16
     low, high = 0.1, 0.9
     span = high - low
@@ -16,10 +15,9 @@ def get_color(i, r_off=1, g_off=1, b_off=1):
 
 
 def generate_communities_graph(G, related_community_edges, display_rce, labels):
-
+    """Generate the given graph for display"""
     node_color = [get_color(G.nodes[v]['community']) for v in G.nodes]
 
-    # Set community color for edges between members of the same community (internal) and intra-community edges (external)
     external = [(v, w) for v, w in G.edges if G.edges[v, w]['community'] == 0]
     internal = [(v, w) for v, w in G.edges if G.edges[v, w]['community'] > 0]
     internal_color = ['black' for e in internal]

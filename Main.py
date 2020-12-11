@@ -11,12 +11,12 @@ git_data = basedir + "musae_git_edges.txt"
 bio_data = basedir + "bio-diseasome.txt"
 karate_data = basedir + "karate.txt"
 
-DG = nx.read_edgelist(bio_data)
+DG = nx.read_edgelist(karate_data)
 G = DG.to_undirected()
 n = nx.number_of_nodes(G)
 
+# Display the Graph
 print("Show Graph")
-# nx.draw(G, with_labels=False, node_size=50)
 pos = nx.spring_layout(G)
 nx.draw_networkx(
         G,
